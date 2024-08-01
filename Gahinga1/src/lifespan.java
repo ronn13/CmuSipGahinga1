@@ -102,9 +102,15 @@ public class lifespan {
             case "1": 
                 BufferedReader br1 = new BufferedReader(new InputStreamReader(System.in));    
                 System.out.println("Enter your User ID:");
-                //search for uid                    
                 String menu_selection1 = br1.readLine();
-                CheckUserFile(menu_selection1);
+                //search for uid                    
+                String uidresult = CheckUserFile(menu_selection1);
+                if(uidresult.length()>1){
+                    // Call User Profile Update Method
+                    System.out.println("User ID Exists");
+                } else {
+                    System.out.println("User ID Does not exist. Please contact Admin or Try Again");
+                }
                 break;                                   
             case "2": 
                 //Call Login Method
@@ -119,21 +125,31 @@ public class lifespan {
     static void LoginFlow(Scanner scanner) throws IOException{        
         System.out.println("Enter email: ");
         String email = scanner.nextLine();
+        
         // Check if Password is in user file
         String result = CheckUserFile(email);        
         if (result.length()> 1) {
             Console cnsl = System.console();
             char[] pwd = cnsl.readPassword("Password: ");
+            
             // Check if Password is in user file
             String pwdresult = CheckUserFile(String.valueOf(pwd));
             if (pwdresult.length()> 1) {
                 System.out.println("Welcome!");
             } else {
                 System.out.println("Invalid Password. Please check and Login Again");
+                // Call landing page
+                LandingPage(scanner);
             }
         } else {
             System.out.println("Invalid Email");
             // Call landing page
+            LandingPage(scanner);
         }
+    }
+
+    // Initiate Registration
+    static void InitiateRegistration(Scanner scanner) throws IOException{
+        //
     }
 }
