@@ -1,39 +1,17 @@
+import java.io.BufferedReader;
 import java.io.Console;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.Scanner;
-import java.util.UUID;
 
 public class lifespan {
     public static void main(String [] args ) throws IOException {
         Scanner scanner = new Scanner(System.in);
 
-        // Generate a unique identifier (UUID)
-        String uuid = UUID.randomUUID().toString();
-
-        System.out.println("Enter email: ");
-        String email = scanner.nextLine();
-
-        ProcessBuilder pb = new ProcessBuilder();
-        pb.command("./sample.sh", email);
-        Process p = pb.start();
-        String result = new String(p.getInputStream().readAllBytes());
-        if (result.length()> 1) {
-            // Check Password
-            Console cnsl = System.console();
-            char[] pwd = cnsl.readPassword("Password: ");
-            ProcessBuilder pbpwd = new ProcessBuilder();
-            pbpwd.command("./sample.sh", String.valueOf(pwd));
-            Process ppwd = pbpwd.start();
-            String pwdresult = new String(ppwd.getInputStream().readAllBytes());
-            if (pwdresult.length()> 1) {
-                System.out.println("Welcome!");
-            } else {
-                System.out.println("Invalid Password. Please check and Login Again");
-            }
-        } else {
-            System.out.println("Invalid Email");
-            // Call landing page
-        }
+        System.out.println("Welcome To LifeSpan.");
+        
+        // Load Landing Page
+        LandingPage(scanner);
 
 //        String password = "yourPasswordHere";
 //        String salt = "randomSalt"; // It's a good practice to generate a random salt
@@ -102,5 +80,68 @@ public class lifespan {
         System.out.println("Years Left to Live: " + yearsLeftToLive); */
 
         scanner.close();
+    }
+
+    static void CheckUserFile(String uniqueid) throws IOException{
+        //
+        ProcessBuilder pb = new ProcessBuilder();
+        pb.command("/mnt/c/Users/STUDENT/SchoolWork/ProgBootcamp/CmuSipGahinga1/Gahinga1/src/sample.sh", uniqueid);
+        Process p = pb.start();
+        String result = new String(p.getInputStream().readAllBytes());
+        System.out.println(result);
+    }
+
+    // Landing Page
+    static  void LandingPage(Scanner scanner) throws IOException{
+        // Landing Page
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        System.out.println("Type 1 To Complete Your Registration. 2: To Login:");
+        String menu_selection = br.readLine();
+
+        switch (menu_selection) {
+            case "1": 
+                BufferedReader br1 = new BufferedReader(new InputStreamReader(System.in));    
+                System.out.println("Enter your User ID:");
+                //search for uid                    
+                String menu_selection1 = br1.readLine();
+                CheckUserFile(menu_selection1);
+                break;                                   
+            case "2": 
+                //Call Login Method
+                LoginFlow(scanner);
+                break;
+            default:
+                System.out.println("Invalid Selection " + menu_selection);
+        }
+    }
+    
+    // Login Flow
+    static void LoginFlow(Scanner scanner) throws IOException{
+        
+        System.out.println("Enter email: ");
+        String email = scanner.nextLine();
+
+        ProcessBuilder pb = new ProcessBuilder();
+        pb.command("./sample.sh", email);
+        Process p = pb.start();
+        String result = new String(p.getInputStream().readAllBytes());
+        
+        if (result.length()> 1) {
+            // Check Password
+            Console cnsl = System.console();
+            char[] pwd = cnsl.readPassword("Password: ");
+            ProcessBuilder pbpwd = new ProcessBuilder();
+            pbpwd.command("./sample.sh", String.valueOf(pwd));
+            Process ppwd = pbpwd.start();
+            String pwdresult = new String(ppwd.getInputStream().readAllBytes());
+            if (pwdresult.length()> 1) {
+                System.out.println("Welcome!");
+            } else {
+                System.out.println("Invalid Password. Please check and Login Again");
+            }
+        } else {
+            System.out.println("Invalid Email");
+            // Call landing page
+        }
     }
 }
