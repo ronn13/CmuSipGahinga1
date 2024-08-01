@@ -1,5 +1,4 @@
-# CmuSipGahinga1
-CmuSipGahinga1 Project Assignment
+# Gahinga1
 Group Members:
 - Dan Ahimbisibwe
 - Ronnie Delyon
@@ -7,3 +6,7 @@ Group Members:
 
 ### User tab delimited csv file storage structure
 uuid    email   password    Role    RegistrationComplete    FirstName   LastName    DateOfBirth    DiagnosticDate    ArtDate    Country    YearsLeftToLive
+
+### Test Account
+username: johndoe@gmail.com
+password: pa55word

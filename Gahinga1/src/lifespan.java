@@ -82,20 +82,20 @@ public class lifespan {
         scanner.close();
     }
 
-    static void CheckUserFile(String uniqueid) throws IOException{
-        //
+    static String CheckUserFile(String uniqueid) throws IOException{
+        //Functionality to Check the User file for specific value
         ProcessBuilder pb = new ProcessBuilder();
-        pb.command("/mnt/c/Users/STUDENT/SchoolWork/ProgBootcamp/CmuSipGahinga1/Gahinga1/src/sample.sh", uniqueid);
+        pb.command("./sample.sh", uniqueid);
         Process p = pb.start();
         String result = new String(p.getInputStream().readAllBytes());
-        System.out.println(result);
+        return(result);
     }
 
     // Landing Page
     static  void LandingPage(Scanner scanner) throws IOException{
         // Landing Page
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-        System.out.println("Type 1 To Complete Your Registration. 2: To Login:");
+        System.out.println("Type 1 To Complete Your Registration. Type 2 To Login:");
         String menu_selection = br.readLine();
 
         switch (menu_selection) {
@@ -116,24 +116,16 @@ public class lifespan {
     }
     
     // Login Flow
-    static void LoginFlow(Scanner scanner) throws IOException{
-        
+    static void LoginFlow(Scanner scanner) throws IOException{        
         System.out.println("Enter email: ");
         String email = scanner.nextLine();
-
-        ProcessBuilder pb = new ProcessBuilder();
-        pb.command("./sample.sh", email);
-        Process p = pb.start();
-        String result = new String(p.getInputStream().readAllBytes());
-        
+        // Check if Password is in user file
+        String result = CheckUserFile(email);        
         if (result.length()> 1) {
-            // Check Password
             Console cnsl = System.console();
             char[] pwd = cnsl.readPassword("Password: ");
-            ProcessBuilder pbpwd = new ProcessBuilder();
-            pbpwd.command("./sample.sh", String.valueOf(pwd));
-            Process ppwd = pbpwd.start();
-            String pwdresult = new String(ppwd.getInputStream().readAllBytes());
+            // Check if Password is in user file
+            String pwdresult = CheckUserFile(String.valueOf(pwd));
             if (pwdresult.length()> 1) {
                 System.out.println("Welcome!");
             } else {
