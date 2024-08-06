@@ -2,6 +2,7 @@ import java.io.BufferedReader;
 import java.io.Console;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.util.Random;
 import java.util.Scanner;
 
 public class lifespan {
@@ -97,6 +98,7 @@ public class lifespan {
         pb.command("./role.sh", uniqueid);
         Process p = pb.start();
         String result = new String(p.getInputStream().readAllBytes());
+        //check exit type of processbuilder rather than check count of result
         if(result.length()>1){
             return 1;
         } else {
@@ -151,6 +153,7 @@ public class lifespan {
                 System.out.println("Welcome!");
                 //Check role
                 int role = CheckIfAdmin(email);
+                System.out.println(role);
                 if(role==1){
                     // Load Admin Home page
                     AdminPage(scanner);
@@ -178,5 +181,64 @@ public class lifespan {
     // Admin Options Page
     static void AdminPage(Scanner scanner) throws IOException{
         System.out.println("Type 1 To View a Profile. Type 2 To Update a Profile. Type 3 Export Data. Type 4 To Initiate a Registration:");
+        String input = scanner.nextLine();
+        switch(input){
+            case "1":
+                System.out.println("Profile view not yet designed");
+            case "2":
+                System.out.println("Update view not yet designed");
+            case "3":
+                System.out.println("Export data not yet designed");
+            case "4":
+                InitRegistration(scanner);
+            default:
+                System.out.println("User Already exists");
+
+        } 
+    }
+
+    //Initiate Registration
+    static void InitRegistration(Scanner scanner) throws IOException{
+        System.out.println("Register User by entering the user's email: ");
+        String email = scanner.nextLine();
+        //If email does not already exist then create user
+        String result = CheckUserFile(email);        
+        if (result.length()> 1) {
+            //Email exists
+            System.out.println("User Already exists");
+            // Call Admin profile page
+            AdminPage(scanner);
+        }
+        else {
+            //Is this user an admin
+            // System.out.println("Is this user an Admin? Y or N: ");
+            // String IsAdmin = scanner.nextLine();
+            // if (IsAdmin=="Y") {
+            //     String Role = "admin";
+            // } else {
+            //     String Role = "patient";
+            // }
+
+            //Email does not exist so create recrod
+            String uid = String.valueOf(new Random().nextInt(1000));
+
+            ProcessBuilder pb = new ProcessBuilder();
+            pb.command("./add_user.sh", uid, email, "NULL", "patient", "0", "NULL", "NULL", "NULL", "NULL", "NULL", "NULL", "NULL");            
+            Process p = pb.start();
+
+            String procresult = new String(p.getInputStream().readAllBytes());
+            //check exit type of processbuilder rather than check count of result
+            if(procresult.contains("0")){
+                //success
+                System.out.println("New User created with uid " + uid);
+                // Call Admin profile page
+                AdminPage(scanner);
+            } else {                
+                System.out.println("ERROR User Creation Failed");
+                // Call Admin profile page
+                AdminPage(scanner);
+            }
+        }
+        
     }
 }
