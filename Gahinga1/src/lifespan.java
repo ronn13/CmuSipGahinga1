@@ -82,13 +82,26 @@ public class lifespan {
         scanner.close();
     }
 
+    // Functionality to Check the User file for specific value        
     static String CheckUserFile(String uniqueid) throws IOException{
-        //Functionality to Check the User file for specific value
         ProcessBuilder pb = new ProcessBuilder();
         pb.command("./sample.sh", uniqueid);
         Process p = pb.start();
         String result = new String(p.getInputStream().readAllBytes());
         return(result);
+    }
+
+    // Check if a user is Admin. Return 1 if Admin, 0 If otherwise
+    static int CheckIfAdmin(String uniqueid) throws IOException{
+        ProcessBuilder pb = new ProcessBuilder();
+        pb.command("./role.sh", uniqueid);
+        Process p = pb.start();
+        String result = new String(p.getInputStream().readAllBytes());
+        if(result.length()>1){
+            return 1;
+        } else {
+            return 0;
+        } 
     }
 
     // Landing Page
@@ -136,6 +149,15 @@ public class lifespan {
             String pwdresult = CheckUserFile(String.valueOf(pwd));
             if (pwdresult.length()> 1) {
                 System.out.println("Welcome!");
+                //Check role
+                int role = CheckIfAdmin(email);
+                if(role==1){
+                    // Load Admin Home page
+                    AdminPage(scanner);
+                } else {
+                    // Load Patient Home Page
+                    PatientPage(scanner);
+                }
             } else {
                 System.out.println("Invalid Password. Please check and Login Again");
                 // Call landing page
@@ -148,8 +170,13 @@ public class lifespan {
         }
     }
 
-    // Initiate Registration
-    static void InitiateRegistration(Scanner scanner) throws IOException{
-        //
+    // Patient Options Page
+    static void PatientPage(Scanner scanner) throws IOException{
+        System.out.println("Type 1 To View Your Profile. Type 2 To Update Your Profile. Type 3 To View Your Life Expectancy:");
+    }
+
+    // Admin Options Page
+    static void AdminPage(Scanner scanner) throws IOException{
+        System.out.println("Type 1 To View a Profile. Type 2 To Update a Profile. Type 3 Export Data. Type 4 To Initiate a Registration:");
     }
 }

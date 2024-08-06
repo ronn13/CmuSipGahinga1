@@ -1,7 +1,5 @@
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
 
 public class Yltl {
 
@@ -14,32 +12,39 @@ public class Yltl {
         System.out.println(result);
     }
 
-    public static void main(String[] args) throws Exception {
-        System.out.println("Welcome to OracleSys!");
+    //In class assignment about polymorphism
+    public abstract class Vehicle {
+        int numberOfTyres;
+        String colour;
 
-        try {
-            BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-            System.out.println("Type 1 To Complete Your Registration. 2: To Login:");
-            String menu_selection = br.readLine();
-
-            switch (menu_selection) {
-                case "1": 
-                    BufferedReader br1 = new BufferedReader(new InputStreamReader(System.in));    
-                    System.out.println("Enter your User ID:");
-                    //search for uid                    
-                    String menu_selection1 = br1.readLine();
-                    CheckUuid(menu_selection1);
-                    break;                                   
-                case "2": 
-                    System.out.println("2 Selected");
-                    //Call Login Method
-                default:
-                    System.out.println("Invalid Selection " + menu_selection);
-            }
-
-        } catch(IOException e) {
-            e.printStackTrace();
+        public abstract void IsLicensed();
+        
+        public void Transmission(){
+            System.out.println("Changes gears");
         }
+        
+        public void Fuel(String fueltype){
+            System.out.print("Has %s fuel" + fueltype);
+        }
+    }
+
+    public class Car extends Vehicle{
+
+        //implement abstract method
+        public void IsLicensed() {
+            System.out.println("Car is licensed");
+        }
+
+        //method overriding
+        public void Transmission(String trantype) {
+            System.out.println("Has %s transmission" + trantype);
+        }
+
+    }
+
+    public static void main(String[] args) throws Exception {
+        Car bmw = new Car();
+        bmw.colour = "red";        
         
     }
     
