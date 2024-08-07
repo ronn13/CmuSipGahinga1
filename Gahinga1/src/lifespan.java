@@ -6,13 +6,68 @@ import java.util.Random;
 import java.util.Scanner;
 
 public class lifespan {
+
+    // User class
+    public abstract class User{
+        static String uid = String.valueOf(new Random().nextInt(1000));
+        static String registrationcomplete = "1";
+        static String role = "patient";
+        static String email="NULL", password="NULL", firstname="NULL", lastname="NULL", dob="NULL", diagnosticdate="NULL", artdate="NULL", country="NULL", yltl="NULL";
+    }
+
+    public class Patient extends User {
+        static String registrationcomplete = "0";
+    }
+
+    public class AdminUser extends User {
+        static String role="admin";
+    }
+    
     public static void main(String [] args ) throws IOException {
         Scanner scanner = new Scanner(System.in);
 
         System.out.println("Welcome To LifeSpan.");
         
         // Load Landing Page
-        LandingPage(scanner);
+        lifespan lifespan = new lifespan();
+        String menu_selection = lifespan.LandingPage(scanner);
+        switch (menu_selection) {
+            case "1": 
+                BufferedReader br1 = new BufferedReader(new InputStreamReader(System.in));    
+                System.out.println("Enter your User ID:");
+                String menu_selection1 = br1.readLine();
+                //search for uid                    
+                String uidresult = lifespan.CheckUserFile(menu_selection1);
+                if(uidresult.length()>1){
+                    // Call User Profile Update Method
+                    System.out.println("User ID Exists");
+                } else {
+                    System.out.println("User ID Does not exist. Please contact Admin or Try Again");
+                }
+                break;                                   
+            case "2": 
+                //Call Login Method
+                String login_result = lifespan.LoginFlow(scanner);
+                if(login_result.contains("ERROR")){
+                    System.out.println(login_result);
+                } else {
+                    //Check role
+                    int role = lifespan.CheckIfAdmin(login_result);
+                    if(role==1){
+                        // Load Admin Home page
+                        lifespan.AdminPage(scanner);
+                    } else {
+                        // Load Patient Home Page
+                        lifespan.PatientPage(scanner, login_result);
+                    }
+                }
+                
+                break;
+            default:
+                System.out.println("Invalid Selection " + menu_selection);
+        }
+
+        
 
 //        String password = "yourPasswordHere";
 //        String salt = "randomSalt"; // It's a good practice to generate a random salt
@@ -84,7 +139,7 @@ public class lifespan {
     }
 
     // Functionality to Check the User file for specific value        
-    static String CheckUserFile(String uniqueid) throws IOException{
+    public String CheckUserFile(String uniqueid) throws IOException{
         ProcessBuilder pb = new ProcessBuilder();
         pb.command("./sample.sh", uniqueid);
         Process p = pb.start();
@@ -93,7 +148,7 @@ public class lifespan {
     }
 
     // Check if a user is Admin. Return 1 if Admin, 0 If otherwise
-    static int CheckIfAdmin(String uniqueid) throws IOException{
+    public int CheckIfAdmin(String uniqueid) throws IOException{
         ProcessBuilder pb = new ProcessBuilder();
         pb.command("./role.sh", uniqueid);
         Process p = pb.start();
@@ -107,37 +162,16 @@ public class lifespan {
     }
 
     // Landing Page
-    static  void LandingPage(Scanner scanner) throws IOException{
+    public String LandingPage(Scanner scanner) throws IOException{
         // Landing Page
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
         System.out.println("Type 1 To Complete Your Registration. Type 2 To Login:");
         String menu_selection = br.readLine();
-
-        switch (menu_selection) {
-            case "1": 
-                BufferedReader br1 = new BufferedReader(new InputStreamReader(System.in));    
-                System.out.println("Enter your User ID:");
-                String menu_selection1 = br1.readLine();
-                //search for uid                    
-                String uidresult = CheckUserFile(menu_selection1);
-                if(uidresult.length()>1){
-                    // Call User Profile Update Method
-                    System.out.println("User ID Exists");
-                } else {
-                    System.out.println("User ID Does not exist. Please contact Admin or Try Again");
-                }
-                break;                                   
-            case "2": 
-                //Call Login Method
-                LoginFlow(scanner);
-                break;
-            default:
-                System.out.println("Invalid Selection " + menu_selection);
-        }
+        return menu_selection;        
     }
     
     // Login Flow
-    static void LoginFlow(Scanner scanner) throws IOException{        
+    public String LoginFlow(Scanner scanner) throws IOException{        
         System.out.println(("-").repeat(100));
         System.out.println("Enter email: ");
         String email = scanner.nextLine();
@@ -152,29 +186,17 @@ public class lifespan {
             String pwdresult = CheckUserFile(String.valueOf(pwd));
             if (pwdresult.length()> 1) {
                 System.out.println("Welcome!");
-                //Check role
-                int role = CheckIfAdmin(email);
-                if(role==1){
-                    // Load Admin Home page
-                    AdminPage(scanner);
-                } else {
-                    // Load Patient Home Page
-                    PatientPage(scanner, email);
-                }
+                return email;
             } else {
-                System.out.println("Invalid Password. Please check and Login Again");
-                // Call landing page
-                LandingPage(scanner);
+                return "ERROR:Invalid Password. Please check and Login Again";
             }
         } else {
-            System.out.println("Invalid Email");
-            // Call landing page
-            LandingPage(scanner);
+            return "ERROR:Invalid Email. Please check and Login Again";
         }
     }
 
     // Patient Lading Page
-    static void PatientPage(Scanner scanner, String email) throws IOException{
+    void PatientPage(Scanner scanner, String email) throws IOException{
         System.out.println(("_").repeat(100));
         System.out.println("Type 1 To View Your Profile. Type 2 To Update Your Profile. Type 3 To View Your Life Expectancy. Type 4 to exit:");
         String input = scanner.nextLine();
@@ -194,7 +216,7 @@ public class lifespan {
     }
 
     // Admin Landing Page
-    static void AdminPage(Scanner scanner) throws IOException{
+    public void AdminPage(Scanner scanner) throws IOException{
         System.out.println(("-").repeat(100));
         System.out.println("Type 1 To View Users. Type 2 To Update a Profile. Type 3 Export Data. Type 4 To Initiate a Registration. Type 5 to exit:");
         String input = scanner.nextLine();
@@ -216,7 +238,7 @@ public class lifespan {
     }
 
     //Initiate Registration
-    static void InitRegistration(Scanner scanner) throws IOException{
+    public void InitRegistration(Scanner scanner) throws IOException{
         System.out.println(("-").repeat(100));
         System.out.println("Register User by entering the user's email: ");
         String email = scanner.nextLine();
@@ -229,27 +251,18 @@ public class lifespan {
             AdminPage(scanner);
         }
         else {
-            //Is this user an admin
-            // System.out.println("Is this user an Admin? Y or N: ");
-            // String IsAdmin = scanner.nextLine();
-            // if (IsAdmin=="Y") {
-            //     String Role = "admin";
-            // } else {
-            //     String Role = "patient";
-            // }
-
-            //Email does not exist so create recrod
-            String uid = String.valueOf(new Random().nextInt(1000));
-
+            Patient patient = new Patient();
+            patient.email = email;
             ProcessBuilder pb = new ProcessBuilder();
-            pb.command("./add_user.sh", uid, email, "NULL", "patient", "0", "NULL", "NULL", "NULL", "NULL", "NULL", "NULL", "NULL");            
+            pb.command("./add_user.sh", patient.uid, patient.email, patient.password, patient.role, patient.registrationcomplete, patient.firstname, patient.lastname, patient.dob, patient.diagnosticdate, 
+                patient.artdate, patient.country, patient.yltl);            
             Process p = pb.start();
 
             String procresult = new String(p.getInputStream().readAllBytes());
             //check exit type of processbuilder rather than check count of result
             if(procresult.contains("0")){
                 //success
-                System.out.println("New User created with uid " + uid);
+                System.out.println("New User created with uid " + patient.uid);
                 // Call Admin profile page
                 AdminPage(scanner);
             } else {                
@@ -261,14 +274,14 @@ public class lifespan {
         
     }
 
-    static void ViewProfile(Scanner scanner, String email) throws IOException {
+    public void ViewProfile(Scanner scanner, String email) throws IOException {
         String result = CheckUserFile(email);
         System.out.println(result);
         PatientPage(scanner, email);
         
     }
 
-    static void ViewUsers(Scanner scanner) throws IOException{
+    public void ViewUsers(Scanner scanner) throws IOException{
         ProcessBuilder pb = new ProcessBuilder();
         pb.command("./viewusers.sh");
         Process p = pb.start();
@@ -276,4 +289,5 @@ public class lifespan {
         System.out.println(result);
         AdminPage(scanner);
     }
+    
 }

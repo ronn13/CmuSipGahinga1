@@ -1,5 +1,4 @@
 import java.io.IOException;
-import java.util.Random;
 import java.util.Scanner;
 
 public class Yltl {   
@@ -28,7 +27,7 @@ public class Yltl {
             // }
 
             //Email does not exist so create recrod
-            String uid = String.valueOf(new Random().nextInt(1000));
+            String uid = "004";
 
             ProcessBuilder pb = new ProcessBuilder();
             pb.command("./add_user.sh", uid, email, "NULL", "patient", "0", "NULL", "NULL", "NULL", "NULL", "NULL", "NULL", "NULL");            
