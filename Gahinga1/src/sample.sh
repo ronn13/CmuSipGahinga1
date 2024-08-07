@@ -1,3 +1,4 @@
-#search for existance of uid in user file
-searchresult=$(grep -w $1 user_sample.csv)
-echo $searchresult
+#!/bin/bash
+# Search for existence of uid in user file
+grep -w "$1" user_sample.csv
+
