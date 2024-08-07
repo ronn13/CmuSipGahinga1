@@ -138,6 +138,7 @@ public class lifespan {
     
     // Login Flow
     static void LoginFlow(Scanner scanner) throws IOException{        
+        System.out.println(new String ("-").repeat(100));
         System.out.println("Enter email: ");
         String email = scanner.nextLine();
         
@@ -175,11 +176,13 @@ public class lifespan {
 
     // Patient Options Page
     static void PatientPage(Scanner scanner) throws IOException{
+        System.out.println(new String ("-").repeat(100));
         System.out.println("Type 1 To View Your Profile. Type 2 To Update Your Profile. Type 3 To View Your Life Expectancy:");
     }
 
     // Admin Options Page
     static void AdminPage(Scanner scanner) throws IOException{
+        System.out.println(new String ("-").repeat(100));
         System.out.println("Type 1 To View a Profile. Type 2 To Update a Profile. Type 3 Export Data. Type 4 To Initiate a Registration:");
         String input = scanner.nextLine();
         switch(input){
@@ -199,6 +202,7 @@ public class lifespan {
 
     //Initiate Registration
     static void InitRegistration(Scanner scanner) throws IOException{
+        System.out.println(new String ("-").repeat(100));
         System.out.println("Register User by entering the user's email: ");
         String email = scanner.nextLine();
         //If email does not already exist then create user
