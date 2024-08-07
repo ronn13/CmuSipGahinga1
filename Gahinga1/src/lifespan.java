@@ -138,7 +138,7 @@ public class lifespan {
     
     // Login Flow
     static void LoginFlow(Scanner scanner) throws IOException{        
-        System.out.println(new String ("-").repeat(100));
+        System.out.println(("-").repeat(100));
         System.out.println("Enter email: ");
         String email = scanner.nextLine();
         
@@ -154,13 +154,12 @@ public class lifespan {
                 System.out.println("Welcome!");
                 //Check role
                 int role = CheckIfAdmin(email);
-                System.out.println(role);
                 if(role==1){
                     // Load Admin Home page
                     AdminPage(scanner);
                 } else {
                     // Load Patient Home Page
-                    PatientPage(scanner);
+                    PatientPage(scanner, email);
                 }
             } else {
                 System.out.println("Invalid Password. Please check and Login Again");
@@ -174,35 +173,51 @@ public class lifespan {
         }
     }
 
-    // Patient Options Page
-    static void PatientPage(Scanner scanner) throws IOException{
-        System.out.println(new String ("-").repeat(100));
-        System.out.println("Type 1 To View Your Profile. Type 2 To Update Your Profile. Type 3 To View Your Life Expectancy:");
-    }
-
-    // Admin Options Page
-    static void AdminPage(Scanner scanner) throws IOException{
-        System.out.println(new String ("-").repeat(100));
-        System.out.println("Type 1 To View a Profile. Type 2 To Update a Profile. Type 3 Export Data. Type 4 To Initiate a Registration:");
+    // Patient Lading Page
+    static void PatientPage(Scanner scanner, String email) throws IOException{
+        System.out.println(("_").repeat(100));
+        System.out.println("Type 1 To View Your Profile. Type 2 To Update Your Profile. Type 3 To View Your Life Expectancy. Type 4 to exit:");
         String input = scanner.nextLine();
         switch(input){
             case "1":
-                System.out.println("Profile view not yet designed");
+                ViewProfile(scanner, email);
+            case "2":
+                System.out.println("Update view not yet designed");
+            case "3":
+                System.out.println("Life expectancy not yet designed");
+            case "4":
+                System.exit(0);
+            default:
+                System.out.println("User Already exists");
+
+        }
+    }
+
+    // Admin Landing Page
+    static void AdminPage(Scanner scanner) throws IOException{
+        System.out.println(("-").repeat(100));
+        System.out.println("Type 1 To View Users. Type 2 To Update a Profile. Type 3 Export Data. Type 4 To Initiate a Registration. Type 5 to exit:");
+        String input = scanner.nextLine();
+        switch(input){
+            case "1":
+                ViewUsers(scanner);
             case "2":
                 System.out.println("Update view not yet designed");
             case "3":
                 System.out.println("Export data not yet designed");
             case "4":
                 InitRegistration(scanner);
+            case "5":
+                System.exit(0);
             default:
-                System.out.println("User Already exists");
+                System.out.println("Invalid Input");
 
         } 
     }
 
     //Initiate Registration
     static void InitRegistration(Scanner scanner) throws IOException{
-        System.out.println(new String ("-").repeat(100));
+        System.out.println(("-").repeat(100));
         System.out.println("Register User by entering the user's email: ");
         String email = scanner.nextLine();
         //If email does not already exist then create user
@@ -244,5 +259,21 @@ public class lifespan {
             }
         }
         
+    }
+
+    static void ViewProfile(Scanner scanner, String email) throws IOException {
+        String result = CheckUserFile(email);
+        System.out.println(result);
+        PatientPage(scanner, email);
+        
+    }
+
+    static void ViewUsers(Scanner scanner) throws IOException{
+        ProcessBuilder pb = new ProcessBuilder();
+        pb.command("./viewusers.sh");
+        Process p = pb.start();
+        String result = new String(p.getInputStream().readAllBytes());
+        System.out.println(result);
+        AdminPage(scanner);
     }
 }
