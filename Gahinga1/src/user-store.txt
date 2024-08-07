@@ -1,0 +1,3 @@
+001    johndoe@gmail.com   $6$5414b2ad-1660-40$7Jn..Wae9FcSLH3.oklQnOXy5yAl.k2awNlN.FB3GOD/Rwznkxm5hKKIlUOxuv1hy3UNoso0u3BUf4CykiU.H0    admin    0    John   Doe    01012000    01012013    01012014    KES    YearsLeftToLive
+002    janedoe@gmail.com   pa55word    patient    0    Jane   Doe    01012000    01012013    01012014    KES    YearsLeftToLive
+

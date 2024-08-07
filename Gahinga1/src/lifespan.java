@@ -1,5 +1,4 @@
 import java.io.BufferedReader;
-import java.io.Console;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.Random;
@@ -7,12 +6,20 @@ import java.util.Scanner;
 
 public class lifespan {
 
+    private String CountryISO(String country) {
+        return "KES";
+    }
+
+    private String TimeLeft(String diagnosticdate) {
+        return "01012020";
+    }
+
     // User class
     public abstract class User{
         static String uid = String.valueOf(new Random().nextInt(1000));
         static String registrationcomplete = "1";
         static String role = "patient";
-        static String email="NULL", password="NULL", firstname="NULL", lastname="NULL", dob="NULL", diagnosticdate="NULL", artdate="NULL", country="NULL", yltl="NULL";
+        static String email="email", password="password", firstname="firstname", lastname="lastname", dob="dob", diagnosticdate="diagnosticdate", artdate="artdate", country="country", yltl="yltl";
     }
 
     public class Patient extends User {
@@ -23,7 +30,7 @@ public class lifespan {
         static String role="admin";
     }
     
-    public static void main(String [] args ) throws IOException {
+    public static void main(String [] args ) throws IOException, InterruptedException {
         Scanner scanner = new Scanner(System.in);
 
         System.out.println("Welcome To LifeSpan.");
@@ -39,8 +46,8 @@ public class lifespan {
                 //search for uid                    
                 String uidresult = lifespan.CheckUserFile(menu_selection1);
                 if(uidresult.length()>1){
-                    // Call User Profile Update Method
-                    System.out.println("User ID Exists");
+                    // Call Registration Complete method
+                    lifespan.CompleteRegistration(scanner, uidresult);
                 } else {
                     System.out.println("User ID Does not exist. Please contact Admin or Try Again");
                 }
@@ -60,80 +67,11 @@ public class lifespan {
                         // Load Patient Home Page
                         lifespan.PatientPage(scanner, login_result);
                     }
-                }
-                
+                }                
                 break;
             default:
                 System.out.println("Invalid Selection " + menu_selection);
         }
-
-        
-
-//        String password = "yourPasswordHere";
-//        String salt = "randomSalt"; // It's a good practice to generate a random salt
-//
-//        try {
-//            // Construct the command to execute OpenSSL
-//            String command = String.format("echo -n \"%s\" | openssl passwd -6 -salt %s", password, salt);
-//
-//            // Execute the command
-//            Process process = Runtime.getRuntime().exec(new String[] { "bash", "-c", command });
-//
-//            // Read the output
-//            BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
-//            String line;
-//            while ((line = reader.readLine()) != null) {
-//                System.out.println("Hashed Password: " + line);
-//            }
-//
-//            // Wait for the process to complete
-//            int exitCode = process.waitFor();
-//            if (exitCode != 0) {
-//                System.err.println("Error: OpenSSL command failed with exit code " + exitCode);
-//            }
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//        }
-
-
-
-        /*
-        System.out.println("Enter password: ");
-        String password = scanner.nextLine();
-
-        System.out.println("Enter first name: ");
-        String firstName = scanner.nextLine();
-
-        System.out.println("Enter last name: ");
-        String lastName = scanner.nextLine();
-
-        System.out.println("Enter date of birth (DD-MM-YYYY): ");
-        String dateOfBirth = scanner.nextLine();
-
-        System.out.println("Enter diagnostic date (YYYY-MM-DD): ");
-        String diagnosticDate = scanner.nextLine();
-
-        System.out.println("Enter ART date (YYYY-MM-DD): ");
-        String artDate = scanner.nextLine();
-
-        System.out.println("Enter country: ");
-        String country = scanner.nextLine();
-
-        System.out.println("Enter years left to live: ");
-        int yearsLeftToLive = scanner.nextInt();
-
-        // Display the collected information
-        System.out.println("\nRegistration Information:");
-        System.out.println("UUID: " + uuid);
-        System.out.println("Email: " + email);
-        System.out.println("Password: " + password);
-        System.out.println("First Name: " + firstName);
-        System.out.println("Last Name: " + lastName);
-        System.out.println("Date of Birth: " + dateOfBirth);
-        System.out.println("Diagnostic Date: " + diagnosticDate);
-        System.out.println("ART Date: " + artDate);
-        System.out.println("Country: " + country);
-        System.out.println("Years Left to Live: " + yearsLeftToLive); */
 
         scanner.close();
     }
@@ -171,7 +109,7 @@ public class lifespan {
     }
     
     // Login Flow
-    public String LoginFlow(Scanner scanner) throws IOException{        
+    public String LoginFlow(Scanner scanner) throws IOException, InterruptedException{        
         System.out.println(("-").repeat(100));
         System.out.println("Enter email: ");
         String email = scanner.nextLine();
@@ -179,11 +117,11 @@ public class lifespan {
         // Check if Password is in user file
         String result = CheckUserFile(email);        
         if (result.length()> 1) {
-            Console cnsl = System.console();
-            char[] pwd = cnsl.readPassword("Password: ");
+            System.out.println("Enter Password below ");
+            String pwd = hashPassword(scanner.nextLine());
             
             // Check if Password is in user file
-            String pwdresult = CheckUserFile(String.valueOf(pwd));
+            String pwdresult = CheckUserFile(pwd);
             if (pwdresult.length()> 1) {
                 System.out.println("Welcome!");
                 return email;
@@ -281,6 +219,93 @@ public class lifespan {
         
     }
 
+    public void CompleteRegistration(Scanner scanner, String email) throws IOException, InterruptedException {
+        System.out.println(("-").repeat(100));
+        System.out.println("Complete your Registration");
+        //init patient object
+        Patient patient = new Patient();
+        patient.email = email;
+        patient.role = "patient";
+        patient.uid = "000";
+        patient.registrationcomplete = "1";
+        // Get values from user
+        System.out.println("Please Enter your First Name: ");
+        patient.firstname = scanner.nextLine();
+        System.out.println("Please Enter your Last Name: ");
+        patient.lastname = scanner.nextLine();
+        System.out.println("Please Enter your Date of Birth in the format DDMMYYYY: ");
+        patient.dob = scanner.nextLine();
+        System.out.println("Have you tested positive for HIV? Y / N: ");
+        String hivStatus = scanner.nextLine();
+        switch(hivStatus){
+            case "Y":
+                System.out.println("What date did you receive your results in the format DDMMYYYY: ");
+                patient.diagnosticdate = scanner.nextLine();
+                break;
+            case "N":
+                break;
+            default:
+                System.out.print("Invalid Input");
+                PatientPage(scanner, email);
+        }
+        System.out.println("Are you on Anti Retroviral Treatment? Y / N: ");
+        String arvstatus = scanner.nextLine();
+        switch(arvstatus){
+            case "Y":
+                System.out.println("What date did you start your treatment in the format DDMMYYYY: ");
+                patient.artdate = scanner.nextLine();
+                break;
+            case "N":
+                break;
+            default:
+                System.out.print("Invalid Input");
+                PatientPage(scanner, email);
+        }
+        // Calculate time left to live
+        patient.yltl = TimeLeft(patient.diagnosticdate);
+        System.out.println("What is your country of Residence: ");
+        patient.country = CountryISO(scanner.nextLine());
+        System.out.println("Enter Password below ");
+        patient.password = hashPassword(scanner.nextLine());
+        
+        // Find line number to be updated
+        ProcessBuilder pb = new ProcessBuilder();
+        pb.command("./line_number.sh", email);
+        Process p = pb.start();
+        String lineNumber = new String(p.getInputStream().readAllBytes());
+        System.out.println("line number: "+ lineNumber);
+        
+        //Replace this line in file
+        ProcessBuilder pb1 = new ProcessBuilder();
+        
+        pb1.command("./update_user.sh", lineNumber, patient.uid, patient.email, patient.password, patient.role, patient.registrationcomplete, patient.firstname, patient.lastname, patient.dob, patient.diagnosticdate, 
+            patient.artdate, patient.country, patient.yltl);            
+        Process p1 = pb1.start();
+
+        BufferedReader reader = new BufferedReader(new InputStreamReader(p1.getInputStream()));
+        String readline;
+        int loopNumber = 0;
+
+        while ((readline = reader.readLine()) != null) {
+            System.out.println(++loopNumber + " " + readline);
+        }
+
+        String procresult = new String(p1.getInputStream().readAllBytes());
+        //check exit type of processbuilder rather than check count of result
+        if(procresult.contains("0")){
+            //success
+            System.out.println("User Updated");
+            // Call Admin profile page
+            PatientPage(scanner, email);
+        } else {                
+            System.out.println("ERROR User Update Failed");
+            // Call Admin profile page
+            LandingPage(scanner);
+        }
+
+
+    }
+
     public void ViewUsers(Scanner scanner) throws IOException{
         ProcessBuilder pb = new ProcessBuilder();
         pb.command("./viewusers.sh");
@@ -288,6 +313,32 @@ public class lifespan {
         String result = new String(p.getInputStream().readAllBytes());
         System.out.println(result);
         AdminPage(scanner);
+    }
+
+    // Hash password using OpenSSL
+    static String hashPassword(String password) throws IOException, InterruptedException {
+        //String salt = generateSalt();
+        //Using static salt value
+        String salt = "5414b2ad-1660-4065-8e41-d5b3d2781770";
+        ProcessBuilder pb = new ProcessBuilder();
+        pb.command("bash", "-c", String.format("echo -n \"%s\" | openssl passwd -6 -salt %s", password, salt));
+        Process process = pb.start();
+        BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
+        String line = reader.readLine();
+        process.waitFor();
+        return line;
+    }
+
+    // Generate a random salt for hashing
+    static String generateSalt() {
+        Random rand = new Random();
+        byte[] saltBytes = new byte[4];
+        rand.nextBytes(saltBytes);
+        StringBuilder salt = new StringBuilder();
+        for (byte b : saltBytes) {
+            salt.append(String.format("%02x", b));
+        }
+        return salt.toString();
     }
     
 }
