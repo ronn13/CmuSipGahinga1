@@ -47,7 +47,7 @@ public class lifespan {
                 String uidresult = lifespan.CheckUserFile(menu_selection1);
                 if(uidresult.length()>1){
                     // Call Registration Complete method
-                    lifespan.CompleteRegistration(scanner, uidresult);
+                    lifespan.CompleteRegistration(scanner, menu_selection1, uidresult);
                 } else {
                     System.out.println("User ID Does not exist. Please contact Admin or Try Again");
                 }
@@ -117,7 +117,7 @@ public class lifespan {
         // Check if Password is in user file
         String result = CheckUserFile(email);        
         if (result.length()> 1) {
-            System.out.println("Enter Password below ");
+            System.out.println("Press Enter to input your password");
             String pwd = hashPassword(scanner.nextLine());
             
             // Check if Password is in user file
@@ -219,91 +219,85 @@ public class lifespan {
         
     }
 
-    public void CompleteRegistration(Scanner scanner, String email) throws IOException, InterruptedException {
+    public void CompleteRegistration(Scanner scanner, String uid, String userObject) throws IOException, InterruptedException {
         System.out.println(("-").repeat(100));
         System.out.println("Complete your Registration");
-        //init patient object
+        
+        // create patient class instance
         Patient patient = new Patient();
-        patient.email = email;
-        patient.role = "patient";
-        patient.uid = "000";
-        patient.registrationcomplete = "1";
-        // Get values from user
-        System.out.println("Please Enter your First Name: ");
-        patient.firstname = scanner.nextLine();
-        System.out.println("Please Enter your Last Name: ");
-        patient.lastname = scanner.nextLine();
-        System.out.println("Please Enter your Date of Birth in the format DDMMYYYY: ");
-        patient.dob = scanner.nextLine();
-        System.out.println("Have you tested positive for HIV? Y / N: ");
-        String hivStatus = scanner.nextLine();
-        switch(hivStatus){
-            case "Y":
-                System.out.println("What date did you receive your results in the format DDMMYYYY: ");
-                patient.diagnosticdate = scanner.nextLine();
-                break;
-            case "N":
-                break;
-            default:
-                System.out.print("Invalid Input");
-                PatientPage(scanner, email);
+        // Get values from existing data in users file
+        String [] patientObj = userObject.split(" ");
+        patient.uid = uid;
+        patient.email = patientObj[1];
+        patient.role = patientObj[3];
+        patient.registrationcomplete = patientObj[4];
+
+        // Check if user already completed registration
+        if(patient.registrationcomplete.contains("1")){
+            // Continue
+            System.out.println("Registration Already Completed for User");
+            LoginFlow(scanner);
+        } else {
+            // Return to Patient Page
+            patient.registrationcomplete = "1";
+            // Get values from user
+            System.out.println("Please Enter your First Name: ");
+            patient.firstname = scanner.nextLine();
+            System.out.println("Please Enter your Last Name: ");
+            patient.lastname = scanner.nextLine();
+            System.out.println("Please Enter your Date of Birth in the format DDMMYYYY: ");
+            patient.dob = scanner.nextLine();
+            System.out.println("Have you tested positive for HIV? Y / N: ");
+            String hivStatus = scanner.nextLine();
+            switch(hivStatus.toUpperCase()){
+                case "Y":
+                    System.out.println("What date did you receive your results in the format DDMMYYYY: ");
+                    patient.diagnosticdate = scanner.nextLine();
+                    break;
+                case "N":
+                    break;
+                default:
+                    System.out.print("Invalid Input");
+                    PatientPage(scanner, patient.email);
+            }
+            System.out.println("Are you on Anti Retroviral Treatment? Y / N: ");
+            String arvstatus = scanner.nextLine();
+            switch(arvstatus.toUpperCase()){
+                case "Y":
+                    System.out.println("What date did you start your treatment in the format DDMMYYYY: ");
+                    patient.artdate = scanner.nextLine();
+                    break;
+                case "N":
+                    break;
+                default:
+                    System.out.print("Invalid Input");
+                    PatientPage(scanner, patient.email);
+            }
+            // Calculate time left to live
+            patient.yltl = patient.diagnosticdate;
+            System.out.println("What is your country of Residence: ");
+            patient.country = scanner.nextLine();
+            System.out.println("Press Enter to set a new password");
+            patient.password = hashPassword(scanner.nextLine());
+            
+            //Replace this line in file
+            ProcessBuilder pb1 = new ProcessBuilder().redirectErrorStream(true);        
+            pb1.command("./update_user.sh", patient.uid, patient.email, patient.password, patient.role, patient.registrationcomplete, patient.firstname, patient.lastname, patient.dob, patient.diagnosticdate, 
+                patient.artdate, patient.country, patient.yltl);   
+            
+            Process p1 = pb1.start();
+            String procresult = new String(p1.getInputStream().readAllBytes());
+            
+            if(procresult.contains("0")){
+                //success
+                System.out.println("User Updated");
+                PatientPage(scanner, patient.email);
+            } else {                
+                System.out.println("ERROR User Update Failed");
+                // Call Admin profile page
+                LandingPage(scanner);
+            }
         }
-        System.out.println("Are you on Anti Retroviral Treatment? Y / N: ");
-        String arvstatus = scanner.nextLine();
-        switch(arvstatus){
-            case "Y":
-                System.out.println("What date did you start your treatment in the format DDMMYYYY: ");
-                patient.artdate = scanner.nextLine();
-                break;
-            case "N":
-                break;
-            default:
-                System.out.print("Invalid Input");
-                PatientPage(scanner, email);
-        }
-        // Calculate time left to live
-        patient.yltl = TimeLeft(patient.diagnosticdate);
-        System.out.println("What is your country of Residence: ");
-        patient.country = CountryISO(scanner.nextLine());
-        System.out.println("Enter Password below ");
-        patient.password = hashPassword(scanner.nextLine());
-        
-        // Find line number to be updated
-        ProcessBuilder pb = new ProcessBuilder();
-        pb.command("./line_number.sh", email);
-        Process p = pb.start();
-        String lineNumber = new String(p.getInputStream().readAllBytes());
-        System.out.println("line number: "+ lineNumber);
-        
-        //Replace this line in file
-        ProcessBuilder pb1 = new ProcessBuilder();
-        
-        pb1.command("./update_user.sh", lineNumber, patient.uid, patient.email, patient.password, patient.role, patient.registrationcomplete, patient.firstname, patient.lastname, patient.dob, patient.diagnosticdate, 
-            patient.artdate, patient.country, patient.yltl);            
-        Process p1 = pb1.start();
-
-        BufferedReader reader = new BufferedReader(new InputStreamReader(p1.getInputStream()));
-        String readline;
-        int loopNumber = 0;
-
-        while ((readline = reader.readLine()) != null) {
-            System.out.println(++loopNumber + " " + readline);
-        }
-
-        String procresult = new String(p1.getInputStream().readAllBytes());
-        //check exit type of processbuilder rather than check count of result
-        if(procresult.contains("0")){
-            //success
-            System.out.println("User Updated");
-            // Call Admin profile page
-            PatientPage(scanner, email);
-        } else {                
-            System.out.println("ERROR User Update Failed");
-            // Call Admin profile page
-            LandingPage(scanner);
-        }
-
-
     }
 
     public void ViewUsers(Scanner scanner) throws IOException{
