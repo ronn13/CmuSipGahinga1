@@ -123,7 +123,7 @@ public class Lifespan {
     }
 
     // Landing Page
-    public String LandingPage(Scanner scanner) throws IOException{
+    public static String LandingPage(Scanner scanner) throws IOException{
         // Landing Page
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
         System.out.println("Type 1 To Complete Your Registration. Type 2 To Login:");
