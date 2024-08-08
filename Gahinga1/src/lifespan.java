@@ -54,18 +54,18 @@ public class lifespan {
                 break;                                   
             case "2": 
                 //Call Login Method
-                String login_result = lifespan.LoginFlow(scanner);
-                if(login_result.contains("ERROR")){
-                    System.out.println(login_result);
+                String userObj = lifespan.LoginFlow(scanner);
+                if(userObj.contains("ERROR")){
+                    System.out.println(userObj);
                 } else {
                     //Check role
-                    int role = lifespan.CheckIfAdmin(login_result);
+                    int role = lifespan.CheckIfAdmin(userObj);
                     if(role==1){
                         // Load Admin Home page
-                        lifespan.AdminPage(scanner);
+                        lifespan.AdminPage(scanner, userObj);
                     } else {
                         // Load Patient Home Page
-                        lifespan.PatientPage(scanner, login_result);
+                        lifespan.PatientPage(scanner, userObj);
                     }
                 }                
                 break;
@@ -115,16 +115,17 @@ public class lifespan {
         String email = scanner.nextLine();
         
         // Check if Password is in user file
-        String result = CheckUserFile(email);        
-        if (result.length()> 1) {
+        String userObj = CheckUserFile(email);        
+        if (userObj.length()> 1) {
             System.out.println("Press Enter to input your password");
             String pwd = hashPassword(scanner.nextLine());
             
-            // Check if Password is in user file
-            String pwdresult = CheckUserFile(pwd);
-            if (pwdresult.length()> 1) {
+            // Check if password from file matches hashed user input is in user file
+            String [] patientObj = userObj.split(" ");
+            String dbpwd = patientObj[2];
+            if (pwd.equals(dbpwd)) {
                 System.out.println("Welcome!");
-                return email;
+                return userObj;
             } else {
                 return "ERROR:Invalid Password. Please check and Login Again";
             }
@@ -134,15 +135,15 @@ public class lifespan {
     }
 
     // Patient Lading Page
-    void PatientPage(Scanner scanner, String email) throws IOException{
+    void PatientPage(Scanner scanner, String obj) throws IOException, InterruptedException{
         System.out.println(("_").repeat(100));
         System.out.println("Type 1 To View Your Profile. Type 2 To Update Your Profile. Type 3 To View Your Life Expectancy. Type 4 to exit:");
         String input = scanner.nextLine();
         switch(input){
             case "1":
-                ViewProfile(scanner, email);
+                ViewProfile(scanner, obj);
             case "2":
-                System.out.println("Update view not yet designed");
+                UpdateProfile(scanner, obj);
             case "3":
                 System.out.println("Life expectancy not yet designed");
             case "4":
@@ -154,7 +155,7 @@ public class lifespan {
     }
 
     // Admin Landing Page
-    public void AdminPage(Scanner scanner) throws IOException{
+    public void AdminPage(Scanner scanner, String userObj) throws IOException{
         System.out.println(("-").repeat(100));
         System.out.println("Type 1 To View Users. Type 2 To Update a Profile. Type 3 Export Data. Type 4 To Initiate a Registration. Type 5 to exit:");
         String input = scanner.nextLine();
@@ -186,7 +187,7 @@ public class lifespan {
             //Email exists
             System.out.println("User Already exists");
             // Call Admin profile page
-            AdminPage(scanner);
+            AdminPage(scanner, result);
         }
         else {
             Patient patient = new Patient();
@@ -202,20 +203,19 @@ public class lifespan {
                 //success
                 System.out.println("New User created with uid " + patient.uid);
                 // Call Admin profile page
-                AdminPage(scanner);
+                AdminPage(scanner, result);
             } else {                
                 System.out.println("ERROR User Creation Failed");
                 // Call Admin profile page
-                AdminPage(scanner);
+                AdminPage(scanner, result);
             }
         }
         
     }
 
-    public void ViewProfile(Scanner scanner, String email) throws IOException {
-        String result = CheckUserFile(email);
-        System.out.println(result);
-        PatientPage(scanner, email);
+    public void ViewProfile(Scanner scanner, String obj) throws IOException, InterruptedException {
+        System.out.println(obj);
+        PatientPage(scanner, obj);
         
     }
 
@@ -274,7 +274,7 @@ public class lifespan {
                     PatientPage(scanner, patient.email);
             }
             // Calculate time left to live
-            patient.yltl = patient.diagnosticdate;
+            patient.yltl = TimeLeft(patient.diagnosticdate);
             System.out.println("What is your country of Residence: ");
             patient.country = scanner.nextLine();
             System.out.println("Press Enter to set a new password");
@@ -300,13 +300,62 @@ public class lifespan {
         }
     }
 
+    public void UpdateProfile(Scanner scanner, String obj) throws IOException, InterruptedException{
+        System.out.println(("-").repeat(100));
+        
+        // create patient class instance
+        Patient patient = new Patient();
+        // Get values from existing data in users file
+        String [] patientObj = obj.split(" ");
+        patient.uid = patientObj[0];
+        patient.email = patientObj[1];
+        patient.role = patientObj[3];
+        patient.registrationcomplete = patientObj[4];
+        patient.password = patientObj[2];
+
+        // Get values from user
+        System.out.println(String.format("Please Update your First Name %s: ", patientObj[5]));
+        patient.firstname = scanner.nextLine();
+        System.out.println(String.format("Please Update your Last Name %s: ", patientObj[6]));
+        patient.lastname = scanner.nextLine();
+        System.out.println(String.format("Please Update your Date of Birth %s in the format DDMMYYYY: ", patientObj[7]));
+        patient.dob = scanner.nextLine();
+        System.out.println(String.format("Update your diagnosis Date %s in the format DDMMYYYY: ", patientObj[8]));
+        patient.diagnosticdate = scanner.nextLine();
+        System.out.println(String.format("Update the date you begain ART Treatment %s in the format DDMMYYYY: ", patientObj[9]));
+        patient.artdate = scanner.nextLine();
+        System.out.println(String.format("Update your country of Residence %s: ", patientObj[10]));
+        patient.country = scanner.nextLine();
+        
+        // Calculate time left to live
+        patient.yltl = TimeLeft(patient.diagnosticdate);
+        
+        //Replace this line in file
+        ProcessBuilder pb1 = new ProcessBuilder().redirectErrorStream(true);        
+        pb1.command("./update_user.sh", patient.uid, patient.email, patient.password, patient.role, patient.registrationcomplete, patient.firstname, patient.lastname, patient.dob, patient.diagnosticdate, 
+            patient.artdate, patient.country, patient.yltl);   
+        
+        Process p1 = pb1.start();
+        String procresult = new String(p1.getInputStream().readAllBytes());
+        
+        if(procresult.contains("0")){
+            //success
+            System.out.println("User Updated");
+            PatientPage(scanner, patient.email);
+        } else {                
+            System.out.println("ERROR User Update Failed");
+            // Call Admin profile page
+            PatientPage(scanner, patient.email);
+        }
+    }
+
     public void ViewUsers(Scanner scanner) throws IOException{
         ProcessBuilder pb = new ProcessBuilder();
         pb.command("./viewusers.sh");
         Process p = pb.start();
         String result = new String(p.getInputStream().readAllBytes());
         System.out.println(result);
-        AdminPage(scanner);
+        //AdminPage(scanner, userObj);
     }
 
     // Hash password using OpenSSL
