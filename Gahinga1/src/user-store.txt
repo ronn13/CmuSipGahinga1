@@ -1,2 +1,3 @@
 001    johndoe@gmail.com   $6$5414b2ad-1660-40$7Jn..Wae9FcSLH3.oklQnOXy5yAl.k2awNlN.FB3GOD/Rwznkxm5hKKIlUOxuv1hy3UNoso0u3BUf4CykiU.H0    admin    0    John   Doe    01012000    01012013    01012014    KES    YearsLeftToLive
-002    me@me.com   $6$5414b2ad-1660-40$WxEmeDmYVmtJYiaMUgQ1rTm90MeaWHU4GkowhFV/pC5Rsskf.88WW7SlqENeBbs7PRQup1oUPZsifsRrsQ8G20    patient    1    wa   wa    wa    wa    wa    wa    wa
+002    me@me.com   $6$5414b2ad-1660-40$7Jn..Wae9FcSLH3.oklQnOXy5yAl.k2awNlN.FB3GOD/Rwznkxm5hKKIlUOxuv1hy3UNoso0u3BUf4CykiU.H0    patient    1    wa   wa    wa    wa    wa    wa    wa
+45    moise@gmail.com   $6$5414b2ad-1660-40$7Jn..Wae9FcSLH3.oklQnOXy5yAl.k2awNlN.FB3GOD/Rwznkxm5hKKIlUOxuv1hy3UNoso0u3BUf4CykiU.H0    patient    1    mussa   iradukunda    01012000    01012000    01012000    Uganda    01012020

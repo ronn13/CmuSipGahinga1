@@ -59,8 +59,7 @@ public class lifespan {
                     System.out.println(userObj);
                 } else {
                     //Check role
-                    int role = lifespan.CheckIfAdmin(userObj);
-                    if(role==1){
+                    if(userObj.split(" ")[3].contains("admin")){
                         // Load Admin Home page
                         lifespan.AdminPage(scanner, userObj);
                     } else {
@@ -111,6 +110,7 @@ public class lifespan {
     // Login Flow
     public String LoginFlow(Scanner scanner) throws IOException, InterruptedException{        
         System.out.println(("-").repeat(100));
+        System.out.println("Enter your email and password to log into the LifeSpan system");
         System.out.println("Enter email: ");
         String email = scanner.nextLine();
         
@@ -157,18 +157,19 @@ public class lifespan {
     // Admin Landing Page
     public void AdminPage(Scanner scanner, String userObj) throws IOException{
         System.out.println(("-").repeat(100));
-        System.out.println("Type 1 To View Users. Type 2 To Update a Profile. Type 3 Export Data. Type 4 To Initiate a Registration. Type 5 to exit:");
+        System.out.println("Type 1 To View Users. Type 2 Export Data. Type 3 To Initiate a Registration. Type 4 to exit:");
         String input = scanner.nextLine();
         switch(input){
             case "1":
-                ViewUsers(scanner);
+                ViewUsers(scanner, userObj);
+                break;
             case "2":
-                System.out.println("Update view not yet designed");
-            case "3":
                 System.out.println("Export data not yet designed");
-            case "4":
+                break;
+            case "3":
                 InitRegistration(scanner);
-            case "5":
+                break;
+            case "4":
                 System.exit(0);
             default:
                 System.out.println("Invalid Input");
@@ -291,7 +292,7 @@ public class lifespan {
             if(procresult.contains("0")){
                 //success
                 System.out.println("User Updated");
-                PatientPage(scanner, patient.email);
+                LoginFlow(scanner);
             } else {                
                 System.out.println("ERROR User Update Failed");
                 // Call Admin profile page
@@ -341,21 +342,21 @@ public class lifespan {
         if(procresult.contains("0")){
             //success
             System.out.println("User Updated");
-            PatientPage(scanner, patient.email);
+            PatientPage(scanner, obj);
         } else {                
             System.out.println("ERROR User Update Failed");
             // Call Admin profile page
-            PatientPage(scanner, patient.email);
+            PatientPage(scanner, obj);
         }
     }
 
-    public void ViewUsers(Scanner scanner) throws IOException{
+    public void ViewUsers(Scanner scanner, String userObj) throws IOException{
         ProcessBuilder pb = new ProcessBuilder();
         pb.command("./viewusers.sh");
         Process p = pb.start();
         String result = new String(p.getInputStream().readAllBytes());
         System.out.println(result);
-        //AdminPage(scanner, userObj);
+        AdminPage(scanner, userObj);
     }
 
     // Hash password using OpenSSL
