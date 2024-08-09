@@ -259,7 +259,7 @@ public class lifespan {
                     break;
                 default:
                     System.out.print("Invalid Input");
-                    PatientPage(scanner, patient.email);
+                    System.exit(0);
             }
             System.out.println("Are you on Anti Retroviral Treatment? Y / N: ");
             String arvstatus = scanner.nextLine();
@@ -272,7 +272,7 @@ public class lifespan {
                     break;
                 default:
                     System.out.print("Invalid Input");
-                    PatientPage(scanner, patient.email);
+                    System.exit(0);
             }
             // Calculate time left to live
             patient.yltl = TimeLeft(patient.diagnosticdate);
@@ -292,11 +292,11 @@ public class lifespan {
             if(procresult.contains("0")){
                 //success
                 System.out.println("User Updated");
-                LoginFlow(scanner);
+                System.exit(0);
             } else {                
                 System.out.println("ERROR User Update Failed");
                 // Call Admin profile page
-                LandingPage(scanner);
+                System.exit(0);
             }
         }
     }
