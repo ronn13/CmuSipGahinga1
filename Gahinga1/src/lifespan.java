@@ -11,9 +11,9 @@ public class lifespan {
     }
 
     private String TimeLeft(String diagnosticdate) {
-        return "01012020";
+        return "NotYetImplemented";
     }
-
+    
     // User class
     public abstract class User{
         static String uid = String.valueOf(new Random().nextInt(1000));
@@ -45,7 +45,7 @@ public class lifespan {
                 String menu_selection1 = br1.readLine();
                 //search for uid                    
                 String uidresult = lifespan.CheckUserFile(menu_selection1);
-                if(uidresult.length()>1){
+                if(uidresult.length()>10){
                     // Call Registration Complete method
                     lifespan.CompleteRegistration(scanner, menu_selection1, uidresult);
                 } else {
@@ -116,7 +116,7 @@ public class lifespan {
         
         // Check if Password is in user file
         String userObj = CheckUserFile(email);        
-        if (userObj.length()> 1) {
+        if (userObj.length()> 10) {
             System.out.println("Press Enter to input your password");
             String pwd = hashPassword(scanner.nextLine());
             
@@ -184,7 +184,7 @@ public class lifespan {
         String email = scanner.nextLine();
         //If email does not already exist then create user
         String result = CheckUserFile(email);        
-        if (result.length()> 1) {
+        if (result.length()> 10) {
             //Email exists
             System.out.println("User Already exists");
             // Call Admin profile page
@@ -383,6 +383,23 @@ public class lifespan {
             salt.append(String.format("%02x", b));
         }
         return salt.toString();
+    }
+
+    // Export user data for admin
+    public static void exportUserData() {
+        ProcessBuilder pb = new ProcessBuilder();
+        pb.command("bash", "-c", String.format("./export_data.sh"));
+        try {
+            Process process = pb.start();
+            int exitCode = process.waitFor();
+            if (exitCode == 0) {
+                System.out.println("Data Exported Successfully to CSV.");
+            } else {
+                System.out.println("Error in Data Export.");
+            }
+        } catch (IOException | InterruptedException e) {
+            e.printStackTrace();
+        }
     }
     
 }
