@@ -164,7 +164,7 @@ public class lifespan {
                 ViewUsers(scanner, userObj);
                 break;
             case "2":
-                System.out.println("Export data not yet designed");
+                exportUserData(scanner, userObj);                
                 break;
             case "3":
                 InitRegistration(scanner);
@@ -386,7 +386,7 @@ public class lifespan {
     }
 
     // Export user data for admin
-    public static void exportUserData() {
+    public void exportUserData(Scanner scanner, String userObj) {
         ProcessBuilder pb = new ProcessBuilder();
         pb.command("bash", "-c", String.format("./export_data.sh"));
         try {
@@ -394,6 +394,7 @@ public class lifespan {
             int exitCode = process.waitFor();
             if (exitCode == 0) {
                 System.out.println("Data Exported Successfully to CSV.");
+                AdminPage(scanner, userObj);
             } else {
                 System.out.println("Error in Data Export.");
             }
