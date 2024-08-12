@@ -1,17 +1,40 @@
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.util.Calendar;
 import java.util.Random;
 import java.util.Scanner;
+//import java.util.stream.Gatherer;
 
 public class lifespan {
 
-    private String CountryISO(String country) {
-        return "KES";
-    }
+    public int TimeLeft(String country, String dob, String artdate, String diagdate) throws IOException, InterruptedException {
+        
+        //Get Avg Lifespan from country list
+        String CtryObj = CheckCountry(country);
+        String [] CtryObjArray = CtryObj.split(",");
+        float averageLifespan = Float.parseFloat(CtryObjArray[6]);
 
-    private String TimeLeft(String diagnosticdate) {
-        return "NotYetImplemented";
+        // Calculate the age
+        int birthYear = Integer.parseInt(dob.substring(4, 8));
+        int currentYear = Calendar.getInstance().get(Calendar.YEAR);
+        int age = currentYear - birthYear;
+
+        // Determine diagnosis and ART start year
+        int diagnosisYear = Integer.parseInt(diagdate.substring(4, 8));
+        int artStartYear = artdate.equals("NULL") ? 0 : Integer.parseInt(artdate.substring(4, 8));
+
+        // Calculate remaining lifespan
+        if (artStartYear == 0) { // Not on ART drugs
+            return Math.max(5, 0);
+        }
+        int remainingYears = Math.round(averageLifespan) - age;
+        double survivalRate = 0.9;
+        int yearsOnART = artStartYear - diagnosisYear;
+        for (int i = 0; i < yearsOnART; i++) {
+            remainingYears *= survivalRate;
+        }
+        return Math.max((int) Math.ceil(remainingYears), 0);
     }
     
     // User class
@@ -19,7 +42,7 @@ public class lifespan {
         static String uid = String.valueOf(new Random().nextInt(1000));
         static String registrationcomplete = "1";
         static String role = "patient";
-        static String email="email", password="password", firstname="firstname", lastname="lastname", dob="dob", diagnosticdate="diagnosticdate", artdate="artdate", country="country", yltl="yltl";
+        static String email="email", password="password", firstname="firstname", lastname="lastname", dob="NULL", diagnosticdate="NULL", artdate="NULL", country="country", yltl="yltl";
     }
 
     public class Patient extends User {
@@ -79,6 +102,15 @@ public class lifespan {
     public String CheckUserFile(String uniqueid) throws IOException{
         ProcessBuilder pb = new ProcessBuilder();
         pb.command("./sample.sh", uniqueid);
+        Process p = pb.start();
+        String result = new String(p.getInputStream().readAllBytes());
+        return(result);
+    }
+
+    // Functionality to Check the User file for specific value        
+    public String CheckCountry(String country) throws IOException{
+        ProcessBuilder pb = new ProcessBuilder();
+        pb.command("./country_search.sh", country);
         Process p = pb.start();
         String result = new String(p.getInputStream().readAllBytes());
         return(result);
@@ -274,10 +306,20 @@ public class lifespan {
                     System.out.print("Invalid Input");
                     System.exit(0);
             }
-            // Calculate time left to live
-            patient.yltl = TimeLeft(patient.diagnosticdate);
-            System.out.println("What is your country of Residence: ");
+            
+            System.out.println(String.format("Update your country of Residence %s: ", patientObj[10]));
             patient.country = scanner.nextLine();
+
+            // Validate country
+            while(CheckCountry(patient.country).length() < 5){
+                System.out.println("Invalid Country Value " + patient.country);
+                System.out.println("Update your country of Residence: ");
+                patient.country = scanner.nextLine();
+            }
+
+            // Calculate time left to live
+            patient.yltl = String.valueOf(TimeLeft(patient.country, patient.dob, patient.artdate, patient.diagnosticdate));
+
             System.out.println("Press Enter to set a new password");
             patient.password = hashPassword(scanner.nextLine());
             
@@ -327,9 +369,16 @@ public class lifespan {
         patient.artdate = scanner.nextLine();
         System.out.println(String.format("Update your country of Residence %s: ", patientObj[10]));
         patient.country = scanner.nextLine();
-        
+
+        // Validate country
+        while(CheckCountry(patient.country).length() < 5){
+            System.out.println("Invalid Country Value " + patient.country);
+            System.out.println("Update your country of Residence: ");
+            patient.country = scanner.nextLine();
+        }
+
         // Calculate time left to live
-        patient.yltl = TimeLeft(patient.diagnosticdate);
+        patient.yltl = String.valueOf(TimeLeft(patient.country, patient.dob, patient.artdate, patient.diagnosticdate));
         
         //Replace this line in file
         ProcessBuilder pb1 = new ProcessBuilder().redirectErrorStream(true);        
