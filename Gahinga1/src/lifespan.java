@@ -56,7 +56,13 @@ public class lifespan {
     public static void main(String [] args ) throws IOException, InterruptedException {
         Scanner scanner = new Scanner(System.in);
 
-        System.out.println("Welcome To LifeSpan.");
+        // Clear screen 
+        System.out.print("\033[H\033[2J");
+        System.out.flush();
+        
+        System.out.println(("-").repeat(100));
+        System.out.println((" ").repeat(40) + "Welcome To LifeSpan.");
+        System.out.println(("-").repeat(100));
         
         // Load Landing Page
         lifespan lifespan = new lifespan();
@@ -64,7 +70,7 @@ public class lifespan {
         switch (menu_selection) {
             case "1": 
                 BufferedReader br1 = new BufferedReader(new InputStreamReader(System.in));    
-                System.out.println("Enter your User ID:");
+                System.out.print("Enter your User ID:");
                 String menu_selection1 = br1.readLine();
                 //search for uid                    
                 String uidresult = lifespan.CheckUserFile(menu_selection1);
@@ -91,6 +97,8 @@ public class lifespan {
                     }
                 }                
                 break;
+            case "3":
+                System.exit(0);
             default:
                 System.out.println("Invalid Selection " + menu_selection);
         }
@@ -133,8 +141,13 @@ public class lifespan {
     // Landing Page
     public String LandingPage(Scanner scanner) throws IOException{
         // Landing Page
+        System.out.println(("-").repeat(100));
+        System.out.println((" ").repeat(40) + "Menu Options");
+        System.out.println(("-").repeat(100));
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-        System.out.println("Type 1 To Complete Your Registration. Type 2 To Login:");
+        System.out.println("1. To Complete Your Registration");
+        System.out.println("2. To Login:");
+        System.out.println("3. To exit:");
         String menu_selection = br.readLine();
         return menu_selection;        
     }
@@ -143,20 +156,21 @@ public class lifespan {
     public String LoginFlow(Scanner scanner) throws IOException, InterruptedException{        
         System.out.println(("-").repeat(100));
         System.out.println("Enter your email and password to log into the LifeSpan system");
-        System.out.println("Enter email: ");
+        System.out.print("Enter email: ");
         String email = scanner.nextLine();
         
         // Check if Password is in user file
         String userObj = CheckUserFile(email);        
         if (userObj.length()> 10) {
-            System.out.println("Press Enter to input your password");
+            System.out.print("Press Enter to input your password");
             String pwd = hashPassword(scanner.nextLine());
             
             // Check if password from file matches hashed user input is in user file
             String [] patientObj = userObj.split(" ");
             String dbpwd = patientObj[2];
             if (pwd.equals(dbpwd)) {
-                System.out.println("Welcome!");
+                System.out.println(("_").repeat(100));
+                System.out.println((" ").repeat(40) + "Welcome!");
                 return userObj;
             } else {
                 return "ERROR:Invalid Password. Please check and Login Again";
@@ -168,8 +182,18 @@ public class lifespan {
 
     // Patient Lading Page
     void PatientPage(Scanner scanner, String obj) throws IOException, InterruptedException{
+        // Clear screen 
+        System.out.print("\033[H\033[2J");
+        System.out.flush();
+
         System.out.println(("_").repeat(100));
-        System.out.println("Type 1 To View Your Profile. Type 2 To Update Your Profile. Type 3 To View Your Life Expectancy. Type 4 to exit:");
+        System.out.println((" ").repeat(40) + "Patient Menu Options");
+        System.out.println(("_").repeat(100));
+        
+        System.out.println("1. To View Your Profile");
+        System.out.println("2. To Update Your Profile");
+        System.out.println("3. To View Your Life Expectancy");
+        System.out.println("4. To exit:");
         String input = scanner.nextLine();
         switch(input){
             case "1":
@@ -177,7 +201,8 @@ public class lifespan {
             case "2":
                 UpdateProfile(scanner, obj);
             case "3":
-                System.out.println("Life expectancy not yet designed");
+                String [] patientObj = obj.split(" ");
+                System.out.println(String.format("Death expected in (years) %s ", patientObj[patientObj.length-1]));
             case "4":
                 System.exit(0);
             default:
@@ -188,8 +213,18 @@ public class lifespan {
 
     // Admin Landing Page
     public void AdminPage(Scanner scanner, String userObj) throws IOException{
+        // Clear screen 
+        System.out.print("\033[H\033[2J");
+        System.out.flush();
+
         System.out.println(("-").repeat(100));
-        System.out.println("Type 1 To View Users. Type 2 Export Data. Type 3 To Initiate a Registration. Type 4 to exit:");
+        System.out.println((" ").repeat(40) + "Admin Menu Options");
+        System.out.println(("-").repeat(100));
+        
+        System.out.println("1. To View Users");
+        System.out.println("2. To Export Data");
+        System.out.println("3. To Initiate a Registration");
+        System.out.println("4. To Exit:");
         String input = scanner.nextLine();
         switch(input){
             case "1":
@@ -211,8 +246,15 @@ public class lifespan {
 
     //Initiate Registration
     public void InitRegistration(Scanner scanner) throws IOException{
+        // Clear screen 
+        System.out.print("\033[H\033[2J");
+        System.out.flush();
+
         System.out.println(("-").repeat(100));
-        System.out.println("Register User by entering the user's email: ");
+        System.out.println((" ").repeat(40) + "Register New User");
+        System.out.println(("-").repeat(100));
+
+        System.out.print("Register User by entering the user's email: ");
         String email = scanner.nextLine();
         //If email does not already exist then create user
         String result = CheckUserFile(email);        
@@ -253,8 +295,13 @@ public class lifespan {
     }
 
     public void CompleteRegistration(Scanner scanner, String uid, String userObject) throws IOException, InterruptedException {
+        // Clear screen 
+        System.out.print("\033[H\033[2J");
+        System.out.flush();
+
         System.out.println(("-").repeat(100));
-        System.out.println("Complete your Registration");
+        System.out.println((" ").repeat(40) + "Complete Registration");
+        System.out.println(("-").repeat(100));
         
         // create patient class instance
         Patient patient = new Patient();
@@ -274,17 +321,17 @@ public class lifespan {
             // Return to Patient Page
             patient.registrationcomplete = "1";
             // Get values from user
-            System.out.println("Please Enter your First Name: ");
+            System.out.print("Please Enter your First Name: ");
             patient.firstname = scanner.nextLine();
-            System.out.println("Please Enter your Last Name: ");
+            System.out.print("Please Enter your Last Name: ");
             patient.lastname = scanner.nextLine();
-            System.out.println("Please Enter your Date of Birth in the format DDMMYYYY: ");
+            System.out.print("Please Enter your Date of Birth in the format DDMMYYYY: ");
             patient.dob = scanner.nextLine();
-            System.out.println("Have you tested positive for HIV? Y / N: ");
+            System.out.print("Have you tested positive for HIV? Y / N: ");
             String hivStatus = scanner.nextLine();
             switch(hivStatus.toUpperCase()){
                 case "Y":
-                    System.out.println("What date did you receive your results in the format DDMMYYYY: ");
+                    System.out.print("What date did you receive your results in the format DDMMYYYY: ");
                     patient.diagnosticdate = scanner.nextLine();
                     break;
                 case "N":
@@ -293,11 +340,11 @@ public class lifespan {
                     System.out.print("Invalid Input");
                     System.exit(0);
             }
-            System.out.println("Are you on Anti Retroviral Treatment? Y / N: ");
+            System.out.print("Are you on Anti Retroviral Treatment? Y / N: ");
             String arvstatus = scanner.nextLine();
             switch(arvstatus.toUpperCase()){
                 case "Y":
-                    System.out.println("What date did you start your treatment in the format DDMMYYYY: ");
+                    System.out.print("What date did you start your treatment in the format DDMMYYYY: ");
                     patient.artdate = scanner.nextLine();
                     break;
                 case "N":
@@ -307,20 +354,20 @@ public class lifespan {
                     System.exit(0);
             }
             
-            System.out.println(String.format("Update your country of Residence %s: ", patientObj[10]));
+            System.out.print(String.format("Update your country of Residence %s: ", patientObj[10]));
             patient.country = scanner.nextLine();
 
             // Validate country
             while(CheckCountry(patient.country).length() < 5){
                 System.out.println("Invalid Country Value " + patient.country);
-                System.out.println("Update your country of Residence: ");
+                System.out.print("Update your country of Residence: ");
                 patient.country = scanner.nextLine();
             }
 
             // Calculate time left to live
             patient.yltl = String.valueOf(TimeLeft(patient.country, patient.dob, patient.artdate, patient.diagnosticdate));
 
-            System.out.println("Press Enter to set a new password");
+            System.out.print("Press Enter to set a new password");
             patient.password = hashPassword(scanner.nextLine());
             
             //Replace this line in file
@@ -344,6 +391,12 @@ public class lifespan {
     }
 
     public void UpdateProfile(Scanner scanner, String obj) throws IOException, InterruptedException{
+        // Clear screen 
+        System.out.print("\033[H\033[2J");
+        System.out.flush();
+
+        System.out.println(("-").repeat(100));
+        System.out.println((" ").repeat(40) + "Profile Update");
         System.out.println(("-").repeat(100));
         
         // create patient class instance
@@ -357,23 +410,23 @@ public class lifespan {
         patient.password = patientObj[2];
 
         // Get values from user
-        System.out.println(String.format("Please Update your First Name %s: ", patientObj[5]));
+        System.out.print(String.format("Please Update your First Name %s: ", patientObj[5]));
         patient.firstname = scanner.nextLine();
-        System.out.println(String.format("Please Update your Last Name %s: ", patientObj[6]));
+        System.out.print(String.format("Please Update your Last Name %s: ", patientObj[6]));
         patient.lastname = scanner.nextLine();
-        System.out.println(String.format("Please Update your Date of Birth %s in the format DDMMYYYY: ", patientObj[7]));
+        System.out.print(String.format("Please Update your Date of Birth %s in the format DDMMYYYY: ", patientObj[7]));
         patient.dob = scanner.nextLine();
-        System.out.println(String.format("Update your diagnosis Date %s in the format DDMMYYYY: ", patientObj[8]));
+        System.out.print(String.format("Update your diagnosis Date %s in the format DDMMYYYY: ", patientObj[8]));
         patient.diagnosticdate = scanner.nextLine();
-        System.out.println(String.format("Update the date you begain ART Treatment %s in the format DDMMYYYY: ", patientObj[9]));
+        System.out.print(String.format("Update the date you begain ART Treatment %s in the format DDMMYYYY: ", patientObj[9]));
         patient.artdate = scanner.nextLine();
-        System.out.println(String.format("Update your country of Residence %s: ", patientObj[10]));
+        System.out.print(String.format("Update your country of Residence %s: ", patientObj[10]));
         patient.country = scanner.nextLine();
 
         // Validate country
         while(CheckCountry(patient.country).length() < 5){
-            System.out.println("Invalid Country Value " + patient.country);
-            System.out.println("Update your country of Residence: ");
+            System.out.print("Invalid Country Value " + patient.country);
+            System.out.print("Update your country of Residence: ");
             patient.country = scanner.nextLine();
         }
 
@@ -390,10 +443,10 @@ public class lifespan {
         
         if(procresult.contains("0")){
             //success
-            System.out.println("User Updated");
+            System.out.print("User Updated");
             PatientPage(scanner, obj);
         } else {                
-            System.out.println("ERROR User Update Failed");
+            System.out.print("ERROR User Update Failed");
             // Call Admin profile page
             PatientPage(scanner, obj);
         }
