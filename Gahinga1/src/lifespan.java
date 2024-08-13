@@ -221,22 +221,19 @@ public class lifespan {
         System.out.println((" ").repeat(40) + "Admin Menu Options");
         System.out.println(("-").repeat(100));
         
-        System.out.println("1. To View Users");
-        System.out.println("2. To Export Data");
-        System.out.println("3. To Initiate a Registration");
-        System.out.println("4. To Exit:");
+        //System.out.println("1. To View Users");
+        System.out.println("1. To Export User Data");
+        System.out.println("2. To Initiate a Registration");
+        System.out.println("3. To Exit:");
         String input = scanner.nextLine();
         switch(input){
             case "1":
-                ViewUsers(scanner, userObj);
-                break;
-            case "2":
                 exportUserData(scanner, userObj);                
                 break;
-            case "3":
+            case "2":
                 InitRegistration(scanner);
                 break;
-            case "4":
+            case "3":
                 System.exit(0);
             default:
                 System.out.println("Invalid Input");
@@ -290,6 +287,10 @@ public class lifespan {
 
     public void ViewProfile(Scanner scanner, String obj) throws IOException, InterruptedException {
         System.out.println(obj);
+        System.out.println("Press Enter to continue...");
+        Scanner scanr = new Scanner(System.in);
+        scanr.nextLine(); // Waits for the user to press Enter
+        System.out.println("Continuing...");
         PatientPage(scanner, obj);
         
     }
@@ -327,32 +328,37 @@ public class lifespan {
             patient.lastname = scanner.nextLine();
             System.out.print("Please Enter your Date of Birth in the format DDMMYYYY: ");
             patient.dob = scanner.nextLine();
+            
             System.out.print("Have you tested positive for HIV? Y / N: ");
             String hivStatus = scanner.nextLine();
             switch(hivStatus.toUpperCase()){
                 case "Y":
                     System.out.print("What date did you receive your results in the format DDMMYYYY: ");
                     patient.diagnosticdate = scanner.nextLine();
+                    System.out.print("Are you on Anti Retroviral Treatment? Y / N: ");
+                    String arvstatus = scanner.nextLine();
+                    switch(arvstatus.toUpperCase()){
+                        case "Y":
+                            System.out.print("What date did you start your treatment in the format DDMMYYYY: ");
+                            patient.artdate = scanner.nextLine();
+                            break;
+                        case "N":
+                            patient.artdate = "NULL";
+                            break;
+                        default:
+                            System.out.print("Invalid Input");
+                            System.exit(0);
+                    }
                     break;
                 case "N":
+                    patient.diagnosticdate = "NULL";
+                    patient.artdate = "NULL";
                     break;
                 default:
                     System.out.print("Invalid Input");
                     System.exit(0);
             }
-            System.out.print("Are you on Anti Retroviral Treatment? Y / N: ");
-            String arvstatus = scanner.nextLine();
-            switch(arvstatus.toUpperCase()){
-                case "Y":
-                    System.out.print("What date did you start your treatment in the format DDMMYYYY: ");
-                    patient.artdate = scanner.nextLine();
-                    break;
-                case "N":
-                    break;
-                default:
-                    System.out.print("Invalid Input");
-                    System.exit(0);
-            }
+            
             
             System.out.print(String.format("Update your country of Residence %s: ", patientObj[10]));
             patient.country = scanner.nextLine();
@@ -365,7 +371,15 @@ public class lifespan {
             }
 
             // Calculate time left to live
-            patient.yltl = String.valueOf(TimeLeft(patient.country, patient.dob, patient.artdate, patient.diagnosticdate));
+            if(patient.diagnosticdate.contains("NULL")){
+                //Get Avg Lifespan from country list
+                String CtryObj = CheckCountry(patient.country);
+                String [] CtryObjArray = CtryObj.split(",");
+                float averageLifespan = Float.parseFloat(CtryObjArray[6]);
+                patient.yltl = String.valueOf(Math.round(averageLifespan));
+            } else {
+                patient.yltl = String.valueOf(TimeLeft(patient.country, patient.dob, patient.artdate, patient.diagnosticdate));
+            }            
 
             System.out.print("Press Enter to set a new password");
             patient.password = hashPassword(scanner.nextLine());
@@ -416,13 +430,46 @@ public class lifespan {
         patient.lastname = scanner.nextLine();
         System.out.print(String.format("Please Update your Date of Birth %s in the format DDMMYYYY: ", patientObj[7]));
         patient.dob = scanner.nextLine();
+        
         System.out.print(String.format("Update your diagnosis Date %s in the format DDMMYYYY: ", patientObj[8]));
         patient.diagnosticdate = scanner.nextLine();
         System.out.print(String.format("Update the date you begain ART Treatment %s in the format DDMMYYYY: ", patientObj[9]));
         patient.artdate = scanner.nextLine();
+        System.out.print("Did you test positive for HIV? Y / N: ");
+        String hivStatus = scanner.nextLine();
+        switch(hivStatus.toUpperCase()){
+            case "Y":
+                System.out.print(String.format("Update your diagnosis Date %s in the format DDMMYYYY: ", patientObj[8]));
+                patient.diagnosticdate = scanner.nextLine();
+
+                System.out.print("Are you on Anti Retroviral Treatment? Y / N: ");
+                String arvstatus = scanner.nextLine();
+                switch(arvstatus.toUpperCase()){
+                    case "Y":
+                        System.out.print("What date did you start your treatment in the format DDMMYYYY: ");
+                        patient.artdate = scanner.nextLine();
+                        break;
+                    case "N":
+                        patient.artdate = "NULL";
+                        break;
+                    default:
+                        System.out.print("Invalid Input");
+                        System.exit(0);
+                }
+                        break;
+            case "N":
+                patient.diagnosticdate = "NULL";
+                patient.artdate = "NULL";
+                break;
+            default:
+                System.out.print("Invalid Input");
+                System.exit(0);
+        }
+
+        
+        
         System.out.print(String.format("Update your country of Residence %s: ", patientObj[10]));
         patient.country = scanner.nextLine();
-
         // Validate country
         while(CheckCountry(patient.country).length() < 5){
             System.out.print("Invalid Country Value " + patient.country);
@@ -431,7 +478,15 @@ public class lifespan {
         }
 
         // Calculate time left to live
-        patient.yltl = String.valueOf(TimeLeft(patient.country, patient.dob, patient.artdate, patient.diagnosticdate));
+        if(patient.diagnosticdate.contains("NULL")){
+            //Get Avg Lifespan from country list
+            String CtryObj = CheckCountry(patient.country);
+            String [] CtryObjArray = CtryObj.split(",");
+            float averageLifespan = Float.parseFloat(CtryObjArray[6]);
+            patient.yltl = String.valueOf(Math.round(averageLifespan));
+        } else {
+            patient.yltl = String.valueOf(TimeLeft(patient.country, patient.dob, patient.artdate, patient.diagnosticdate));
+        }
         
         //Replace this line in file
         ProcessBuilder pb1 = new ProcessBuilder().redirectErrorStream(true);        
@@ -453,11 +508,34 @@ public class lifespan {
     }
 
     public void ViewUsers(Scanner scanner, String userObj) throws IOException{
-        ProcessBuilder pb = new ProcessBuilder();
-        pb.command("./viewusers.sh");
-        Process p = pb.start();
-        String result = new String(p.getInputStream().readAllBytes());
-        System.out.println(result);
+        try{
+            ProcessBuilder pb = new ProcessBuilder();
+            pb.command("./viewusers.sh");
+            Process p = pb.start();
+
+            BufferedReader reader = new BufferedReader(new InputStreamReader(p.getInputStream()));
+            StringBuilder builder = new StringBuilder();
+            String line;
+
+            while ((line = reader.readLine()) != null) {
+                builder.append(line);
+            }
+
+            String result = builder.toString();
+            System.out.println(result); // Output the collected lines
+            System.out.println("End of script execution");
+        } catch(IOException e){
+            System.out.println("Error executing the script");
+            e.printStackTrace();
+        }
+        
+        //String result = new String(p.getInputStream().readAllBytes());
+        //System.out.println(result);
+        System.out.println("Press Enter to continue...");
+        Scanner scanr = new Scanner(System.in);
+        scanr.nextLine(); // Waits for the user to press Enter
+        System.out.println("Continuing...");
+
         AdminPage(scanner, userObj);
     }
 
@@ -495,7 +573,11 @@ public class lifespan {
             Process process = pb.start();
             int exitCode = process.waitFor();
             if (exitCode == 0) {
-                System.out.println("Data Exported Successfully to CSV.");
+                System.out.println("User Data exported Successfully to exported_data.csv at Project Root.");
+                System.out.println("Press Enter to continue...");
+                Scanner scanr = new Scanner(System.in);
+                scanr.nextLine(); // Waits for the user to press Enter
+                System.out.println("Continuing...");
                 AdminPage(scanner, userObj);
             } else {
                 System.out.println("Error in Data Export.");
