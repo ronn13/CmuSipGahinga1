@@ -6,3 +6,9 @@ UserID,Email,Password,Role,OnART,FirstName,LastName,DOB,DiagnosisDate,ARTStartDa
 492    hd   $6$5414b2ad-1660-40$7Jn..Wae9FcSLH3.oklQnOXy5yAl.k2awNlN.FB3GOD/Rwznkxm5hKKIlUOxuv1hy3UNoso0u3BUf4CykiU.H0    patient    1    Hirwa   Olegue    01012000    01012000    01012000    Uganda    NotYetImplemented
 317    kami@gmail.com   $6$5414b2ad-1660-40$7Jn..Wae9FcSLH3.oklQnOXy5yAl.k2awNlN.FB3GOD/Rwznkxm5hKKIlUOxuv1hy3UNoso0u3BUf4CykiU.H0    patient    1    Kevine   Kenny    02022000    02032000    01032000    Nigeria    NotYetImplemented
 678    meme@gmail.com   $6$5414b2ad-1660-40$7Jn..Wae9FcSLH3.oklQnOXy5yAl.k2awNlN.FB3GOD/Rwznkxm5hKKIlUOxuv1hy3UNoso0u3BUf4CykiU.H0    patient    1    Ian   Akotey    01012000    01012004    artdate    Nigeria    NotYetImplemented
+2834    tv@gmail.com   $6$5414b2ad-1660-40$7Jn..Wae9FcSLH3.oklQnOXy5yAl.k2awNlN.FB3GOD/Rwznkxm5hKKIlUOxuv1hy3UNoso0u3BUf4CykiU.H0    patient    1    wa   tv    01012000    01012010    01012010    Rwanda    42
+81    chapati@gmail.com   $6$5414b2ad-1660-40$7Jn..Wae9FcSLH3.oklQnOXy5yAl.k2awNlN.FB3GOD/Rwznkxm5hKKIlUOxuv1hy3UNoso0u3BUf4CykiU.H0    patient    1    Chapati   Ronnie    01012000    01012010    01012010    Rwanda    42
+146    john@gmail.com   password    patient    0    firstname   lastname    NULL    NULL    NULL    country    yltl
+273    moses@gmail.com   $6$5414b2ad-1660-40$7Jn..Wae9FcSLH3.oklQnOXy5yAl.k2awNlN.FB3GOD/Rwznkxm5hKKIlUOxuv1hy3UNoso0u3BUf4CykiU.H0    patient    1    Moses   Cmu    01012000    01012010    01012010    Rwanda    42
+892    gahinga@gmail.com   $6$5414b2ad-1660-40$7Jn..Wae9FcSLH3.oklQnOXy5yAl.k2awNlN.FB3GOD/Rwznkxm5hKKIlUOxuv1hy3UNoso0u3BUf4CykiU.H0    patient    1    Moise   Gahinga    01012000    01012010    01012010    Rwanda    42
+53    dan@gmail.com   password    patient    0    firstname   lastname    NULL    NULL    NULL    country    yltl

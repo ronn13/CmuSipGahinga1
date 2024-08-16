@@ -4,7 +4,6 @@ import java.io.InputStreamReader;
 import java.util.Calendar;
 import java.util.Random;
 import java.util.Scanner;
-//import java.util.stream.Gatherer;
 
 public class lifespan {
 
@@ -193,26 +192,34 @@ public class lifespan {
         System.out.println("1. To View Your Profile");
         System.out.println("2. To Update Your Profile");
         System.out.println("3. To View Your Life Expectancy");
-        System.out.println("4. To exit:");
+        System.out.println("4. To Quit:");
         String input = scanner.nextLine();
         switch(input){
             case "1":
                 ViewProfile(scanner, obj);
+                break;
             case "2":
                 UpdateProfile(scanner, obj);
+                break;
             case "3":
                 String [] patientObj = obj.split(" ");
                 System.out.println(String.format("Death expected in (years) %s ", patientObj[patientObj.length-1]));
+                break;
             case "4":
+                // System.out.println("Returning to Landing Page...");
+                // TimeUnit.SECONDS.sleep(2);
+                // LandingPage(scanner);
+                // break;
                 System.exit(0);
             default:
                 System.out.println("User Already exists");
+                break;
 
         }
     }
 
     // Admin Landing Page
-    public void AdminPage(Scanner scanner, String userObj) throws IOException{
+    public void AdminPage(Scanner scanner, String userObj) throws IOException, InterruptedException{
         // Clear screen 
         System.out.print("\033[H\033[2J");
         System.out.flush();
@@ -224,7 +231,7 @@ public class lifespan {
         //System.out.println("1. To View Users");
         System.out.println("1. To Export User Data");
         System.out.println("2. To Initiate a Registration");
-        System.out.println("3. To Exit:");
+        System.out.println("3. To Quit:");
         String input = scanner.nextLine();
         switch(input){
             case "1":
@@ -234,15 +241,20 @@ public class lifespan {
                 InitRegistration(scanner);
                 break;
             case "3":
+                // System.out.println("...Logging Out.....");
+                // TimeUnit.SECONDS.sleep(1);
+                // LandingPage(scanner);
+                // break;
                 System.exit(0);
             default:
                 System.out.println("Invalid Input");
+                break;
 
         } 
     }
 
     //Initiate Registration
-    public void InitRegistration(Scanner scanner) throws IOException{
+    public void InitRegistration(Scanner scanner) throws IOException, InterruptedException{
         // Clear screen 
         System.out.print("\033[H\033[2J");
         System.out.flush();
@@ -258,6 +270,10 @@ public class lifespan {
         if (result.length()> 10) {
             //Email exists
             System.out.println("User Already exists");
+            System.out.println("Press Enter to continue...");
+            Scanner scanr = new Scanner(System.in);
+            scanr.nextLine(); // Waits for the user to press Enter
+            System.out.println("Continuing...");
             // Call Admin profile page
             AdminPage(scanner, result);
         }
@@ -274,10 +290,18 @@ public class lifespan {
             if(procresult.contains("0")){
                 //success
                 System.out.println("New User created with uid " + patient.uid);
+                System.out.println("Press Enter to continue...");
+                Scanner scanr = new Scanner(System.in);
+                scanr.nextLine(); // Waits for the user to press Enter
+                System.out.println("Continuing...");
                 // Call Admin profile page
                 AdminPage(scanner, result);
             } else {                
                 System.out.println("ERROR User Creation Failed");
+                System.out.println("Press Enter to continue...");
+                Scanner scanr = new Scanner(System.in);
+                scanr.nextLine(); // Waits for the user to press Enter
+                System.out.println("Continuing...");
                 // Call Admin profile page
                 AdminPage(scanner, result);
             }
@@ -507,7 +531,7 @@ public class lifespan {
         }
     }
 
-    public void ViewUsers(Scanner scanner, String userObj) throws IOException{
+    public void ViewUsers(Scanner scanner, String userObj) throws IOException, InterruptedException{
         try{
             ProcessBuilder pb = new ProcessBuilder();
             pb.command("./viewusers.sh");
